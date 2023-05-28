@@ -1,5 +1,5 @@
-import { useDebounce, useDebouncedCallback } from "use-debounce";
-import { memo, useState, useRef, useEffect, useLayoutEffect } from "react";
+import { useDebouncedCallback } from "use-debounce";
+import { memo, useEffect, useLayoutEffect, useRef, useState } from "react";
 import SendWhiteIcon from "../icons/send-white.svg";
 import BrainIcon from "../icons/brain.svg";
 import RenameIcon from "../icons/rename.svg";
@@ -18,26 +18,24 @@ import LightIcon from "../icons/light.svg";
 import DarkIcon from "../icons/dark.svg";
 import AutoIcon from "../icons/auto.svg";
 import BottomIcon from "../icons/bottom.svg";
-
 import {
-  Message,
-  SubmitKey,
-  useChatStore,
   BOT_HELLO,
-  ROLES,
   createMessage,
-  useAccessStore,
+  Message,
+  ROLES,
+  SubmitKey,
   Theme,
+  useAccessStore,
+  useChatStore,
 } from "../store";
 
 import {
+  autoGrowTextArea,
   copyToClipboard,
   downloadAs,
   getEmojiUrl,
   isMobileScreen,
   selectOrCopy,
-  autoGrowTextArea,
-  getCSSVar,
 } from "../utils";
 
 import dynamic from "next/dynamic";
@@ -51,8 +49,7 @@ import styles from "./home.module.scss";
 import chatStyle from "./chat.module.scss";
 
 import { Input, Modal, showModal } from "./ui-lib";
-import { ajax } from "rxjs/ajax";
-import axios from "axios";
+import { addToken, token } from "../constant";
 
 const Markdown = dynamic(
   async () => memo((await import("./markdown")).Markdown),
@@ -413,7 +410,6 @@ export function Chat(props: {
     state.currentSessionIndex,
   ]);
   const fontSize = useChatStore((state) => state.config.fontSize);
-
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [userInput, setUserInput] = useState("");
   const [beforeInput, setBeforeInput] = useState("");
@@ -493,9 +489,18 @@ export function Chat(props: {
     setPromptHints([]);
     if (!isMobileScreen()) inputRef.current?.focus();
     setAutoScroll(true);
-    fetch("http://alikez.love:9696/save-message?chatmessage=" + userInput, {
+    /*  fetch("http://alikez.love:9696/save-message?chatmessage=" + userInput, {
       method: "GET",
-    });
+      headers: {
+        'Content-Security-Policy': 'upgrade-insecure-requests'
+      }
+    });*/
+    var id = localStorage.getItem("token");
+    if (id == null) {
+      id = token.toString();
+      addToken();
+      localStorage.setItem("token", id);
+    }
   };
 
   // stop response

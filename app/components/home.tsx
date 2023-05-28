@@ -24,7 +24,9 @@ import { Chat } from "./chat";
 import dynamic from "next/dynamic";
 import { REPO_URL } from "../constant";
 import { ErrorBoundary } from "./error";
-
+import APlayer from "aplayer";
+import "aplayer/dist/APlayer.min.css";
+import ScreenEffect from "./ScreenEffect";
 export function Loading(props: { noLogo?: boolean }) {
   return (
     <div className={styles["loading-content"]}>
@@ -148,7 +150,6 @@ function _Home() {
 
   // drag side bar
   const { onDragMouseDown } = useDragSideBar();
-
   useSwitchTheme();
 
   if (loading) {
@@ -169,7 +170,7 @@ function _Home() {
         <div className={styles["sidebar-header"]}>
           <div className={styles["sidebar-title"]}>ChatGPT Next</div>
           <div className={styles["sidebar-sub-title"]}>
-            Build your own AI assistant.
+            Welcome to talk to my GPT.
           </div>
           <div className={styles["sidebar-logo"]}>
             <ChatGptIcon />
@@ -185,7 +186,6 @@ function _Home() {
         >
           <ChatList />
         </div>
-
         <div className={styles["sidebar-tail"]}>
           <div className={styles["sidebar-actions"]}>
             <div className={styles["sidebar-action"] + " " + styles.mobile}>
@@ -249,10 +249,48 @@ function _Home() {
   );
 }
 
+function MyAplayer() {
+  useEffect(() => {
+    // Check if document object is defined
+    if (typeof document !== "undefined") {
+      const playerElement = document.getElementById("player");
+      if (playerElement) {
+        // Initialize APlayer
+        const ap = new APlayer({
+          container: document.getElementById("player"),
+          fixed: true,
+          theme: "#fe9600",
+          listMaxHeight: "300px",
+          listFolded: false,
+          autoplay: true,
+          preload: "none",
+          order: "random",
+          audio: [
+            {
+              name: "Song Name 2",
+              artist: "Artist Name 2",
+              url: "https://api.oick.cn/wyy/api.php?id=1303027499",
+              cover: "song2.jpg",
+            },
+          ],
+        });
+
+        // Clean up function
+        return () => {
+          ap.destroy();
+        };
+      }
+    }
+  }, []);
+  return <div id="player"></div>;
+}
+
 export function Home() {
   return (
     <ErrorBoundary>
       <_Home></_Home>
+      <MyAplayer></MyAplayer>
+      <ScreenEffect />
     </ErrorBoundary>
   );
 }
